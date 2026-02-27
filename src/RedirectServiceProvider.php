@@ -152,14 +152,14 @@ class RedirectServiceProvider extends AddonServiceProvider
         }
 
         $this->publishes([
-            __DIR__.'/../database/migrations/create_redirect_error_tables.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_redirect_error_tables.php'),
-            __DIR__.'/../database/migrations/increase_redirect_error_table_url_length.php.stub' => database_path('migrations/'.date('Y_m_d_His', time() + 1).'_increase_redirect_error_table_url_length.php'),
+            __DIR__.'/../database/migrations/create_redirect_error_tables.php.stub' => $this->migrationPath('create_redirect_error_tables.php'),
+            __DIR__.'/../database/migrations/increase_redirect_error_table_url_length.php.stub' => $this->migrationPath('increase_redirect_error_table_url_length.php', 1),
         ], 'statamic-redirect-error-migrations');
 
         $this->publishes([
-            __DIR__.'/../database/migrations/create_redirect_redirects_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time()).'_create_redirect_redirects_table.php'),
-            __DIR__.'/../database/migrations/add_description_to_redirect_redirects_table.php.stub' => database_path('migrations/'.date('Y_m_d_His', time() + 1).'_add_description_to_redirect_redirects_table.php'),
-            __DIR__.'/../database/migrations/increase_redirect_redirects_table_url_length.php.stub' => database_path('migrations/'.date('Y_m_d_His', time() + 2).'_increase_redirect_redirects_table_url_length.php'),
+            __DIR__.'/../database/migrations/create_redirect_redirects_table.php.stub' => $this->migrationPath('create_redirect_redirects_table.php'),
+            __DIR__.'/../database/migrations/add_description_to_redirect_redirects_table.php.stub' => $this->migrationPath('add_description_to_redirect_redirects_table.php', 1),
+            __DIR__.'/../database/migrations/increase_redirect_redirects_table_url_length.php.stub' => $this->migrationPath('increase_redirect_redirects_table_url_length.php', 2),
         ], 'statamic-redirect-redirect-migrations');
     }
 
@@ -338,6 +338,19 @@ class RedirectServiceProvider extends AddonServiceProvider
         ], 'statamic-redirect-config');
 
         return $this;
+    }
+
+    protected function migrationPath(string $migrationFileName, int $timestampOffset = 0): string
+    {
+        $publishedMigrations = glob(database_path("migrations/*_{$migrationFileName}"));
+
+        if (! empty($publishedMigrations)) {
+            sort($publishedMigrations);
+
+            return $publishedMigrations[0];
+        }
+
+        return database_path('migrations/'.date('Y_m_d_His', time() + $timestampOffset)."_{$migrationFileName}");
     }
 
     protected function bootPermissions()
