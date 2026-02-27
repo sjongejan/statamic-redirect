@@ -111,41 +111,37 @@ class RedirectServiceProvider extends AddonServiceProvider
         });
     }
 
-    public function boot(): void
+    public function bootAddon(): void
     {
-        parent::boot();
-
         $this->bootApi();
 
         $this->commands([
             CleanErrorsCommand::class,
         ]);
 
-        Statamic::booted(function () {
-            $router = $this->app->make(Router::class);
-            $router->prependMiddlewareToGroup('statamic.web', HandleNotFound::class);
-            $router->prependMiddlewareToGroup('web', HandleNotFound::class);
+        $router = $this->app->make(Router::class);
+        $router->prependMiddlewareToGroup('statamic.web', HandleNotFound::class);
+        $router->prependMiddlewareToGroup('web', HandleNotFound::class);
 
-            ErrorHandled::register();
-            MatchType::register();
-            Type::register();
-            RedirectSite::register();
+        ErrorHandled::register();
+        MatchType::register();
+        Type::register();
+        RedirectSite::register();
 
-            if (config('statamic.git.enabled')) {
-                Git::listen(RedirectSaved::class);
-            }
+        if (config('statamic.git.enabled')) {
+            Git::listen(RedirectSaved::class);
+        }
 
-            File::ensureDirectoryExists(storage_path('redirect'));
+        File::ensureDirectoryExists(storage_path('redirect'));
 
-            $this->loadViewsFrom(__DIR__.'/../resources/views', 'redirect');
+        $this->loadViewsFrom(__DIR__.'/../resources/views', 'redirect');
 
-            $this
-                ->bootAddonNav()
-                ->bootErrors()
-                ->bootRedirects()
-                ->bootPermissions()
-                ->bootGraphQL();
-        });
+        $this
+            ->bootAddonNav()
+            ->bootErrors()
+            ->bootRedirects()
+            ->bootPermissions()
+            ->bootGraphQL();
 
         if (! $this->app->runningInConsole()) {
             return;

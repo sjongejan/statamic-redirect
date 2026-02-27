@@ -1,11 +1,13 @@
 <?php
 
 use Illuminate\Support\Facades\File;
-use Illuminate\Support\ServiceProvider;
 use Rias\StatamicRedirect\RedirectServiceProvider;
 
 it('reuses existing redirect migration filenames when publishing', function () {
-    $migrationsPath = database_path('migrations');
+    $originalDatabasePath = $this->app->databasePath();
+    $isolatedDatabasePath = base_path('tests/tmp/redirect-migration-publish');
+    $migrationsPath = "{$isolatedDatabasePath}/migrations";
+    $this->app->useDatabasePath($isolatedDatabasePath);
 
     $existingMigrations = [
         $migrationsPath.'/2020_01_01_000000_create_redirect_redirects_table.php',
@@ -20,17 +22,18 @@ it('reuses existing redirect migration filenames when publishing', function () {
             File::put($migration, '<?php');
         }
 
-        (new RedirectServiceProvider($this->app))->boot();
+        $provider = new class($this->app) extends RedirectServiceProvider {
+            public function resolveMigrationPath(string $migrationFileName, int $timestampOffset = 0): string
+            {
+                return $this->migrationPath($migrationFileName, $timestampOffset);
+            }
+        };
 
-        $paths = ServiceProvider::pathsToPublish(
-            RedirectServiceProvider::class,
-            'statamic-redirect-redirect-migrations'
-        );
-
-        expect($paths[base_path('database/migrations/create_redirect_redirects_table.php.stub')])->toBe($existingMigrations[0]);
-        expect($paths[base_path('database/migrations/add_description_to_redirect_redirects_table.php.stub')])->toBe($existingMigrations[1]);
-        expect($paths[base_path('database/migrations/increase_redirect_redirects_table_url_length.php.stub')])->toBe($existingMigrations[2]);
+        expect($provider->resolveMigrationPath('create_redirect_redirects_table.php'))->toBe($existingMigrations[0]);
+        expect($provider->resolveMigrationPath('add_description_to_redirect_redirects_table.php', 1))->toBe($existingMigrations[1]);
+        expect($provider->resolveMigrationPath('increase_redirect_redirects_table_url_length.php', 2))->toBe($existingMigrations[2]);
     } finally {
-        File::delete($existingMigrations);
+        File::deleteDirectory($isolatedDatabasePath);
+        $this->app->useDatabasePath($originalDatabasePath);
     }
 });

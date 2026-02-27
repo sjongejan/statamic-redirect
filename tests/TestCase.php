@@ -5,6 +5,7 @@ namespace Tests;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\File;
+use Orchestra\Testbench\Attributes\WithMigration;
 use Rias\StatamicRedirect\Data\Error;
 use Rias\StatamicRedirect\Data\Hit;
 use Rias\StatamicRedirect\Facades\Redirect;
@@ -14,6 +15,7 @@ use Statamic\Facades\Stache;
 use Statamic\Facades\User;
 use Statamic\Testing\AddonTestCase;
 
+#[WithMigration]
 class TestCase extends AddonTestCase
 {
     use LazilyRefreshDatabase;
@@ -33,7 +35,11 @@ class TestCase extends AddonTestCase
         $this->faker = $this->makeFaker();
 
         File::deleteDirectory(base_path('content/redirects'));
-        Entry::all()->each->delete();
+        try {
+            Entry::all()->each->delete();
+        } catch (\Throwable) {
+            // Ignore
+        }
         Error::truncate();
         Hit::truncate();
         Redirect::all()->each->delete();
