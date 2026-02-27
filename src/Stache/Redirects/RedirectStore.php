@@ -34,7 +34,7 @@ class RedirectStore extends BasicStore
             ->id($id)
             ->source(Arr::pull($data, 'source'))
             ->source_md5(Arr::pull($data, 'source_md5'))
-            ->destination_type(Arr::pull($data, 'destination_type'))
+            ->destination_type(Arr::pull($data, 'destination_type', 'url'))
             ->destination(Arr::pull($data, 'destination'))
             ->destination_entry(Arr::pull($data, 'destination_entry'))
             ->type(Arr::pull($data, 'type'))

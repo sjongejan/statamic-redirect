@@ -86,16 +86,19 @@ class Redirect implements RedirectContract
 
     public function destination_type($destination_type = null)
     {
-        return $this->fluentlyGetOrSet('destination_type')->args(func_get_args());
+        return $this->fluentlyGetOrSet('destination_type')
+            ->getter(fn ($destinationType) => $destinationType ?? 'url')
+            ->args(func_get_args());
     }
 
     public function destination($destination = null)
     {
         return $this->fluentlyGetOrSet('destination')
             ->getter(function () {
-                return match ($this->destination_type) {
+                return match ($this->destination_type()) {
                     'url' => $this->destination,
                     'entry' => Entry::find($this->destination_entry)->in($this->site())->url(),
+                    default => $this->destination,
                 };
             })
             ->args(func_get_args());

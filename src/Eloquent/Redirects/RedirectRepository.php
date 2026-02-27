@@ -111,7 +111,7 @@ class RedirectRepository implements RepositoryContract
             ->id($model->id)
             ->source($model->source)
             ->source_md5(md5($model->source))
-            ->destination_type($model->destination_type)
+            ->destination_type($model->destination_type ?? 'url')
             ->destination($model->destination)
             ->destination_entry($model->destination_entry)
             ->type($model->type)

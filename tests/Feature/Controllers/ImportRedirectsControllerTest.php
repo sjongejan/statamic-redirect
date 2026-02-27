@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\File;
 use Rias\StatamicRedirect\Contracts\Redirect as RedirectContract;
 use Rias\StatamicRedirect\Facades\Redirect;
 use Rias\StatamicRedirect\Http\Controllers\Redirects\ImportRedirectsController;
@@ -100,6 +101,40 @@ it('will update redirects with duplicate source', function () {
     expect(Redirect::query()->count())->toEqual(1);
     tap(Redirect::findByUrl(\Statamic\Facades\Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
         expect($redirect->destination())->toEqual('/bar');
+        expect($redirect->type())->toEqual('301');
+        expect($redirect->matchType())->toEqual('exact');
+    });
+});
+
+it('can import over legacy redirects without destination type', function () {
+    $this->asAdmin();
+
+    $site = \Statamic\Facades\Site::default()->handle();
+
+    File::ensureDirectoryExists(base_path("content/redirects/{$site}"));
+    File::put(base_path("content/redirects/{$site}/legacy.yaml"), <<<YAML
+id: legacy
+enabled: true
+source: /foo
+source_md5: 1effb2475fcfba4f9e8b8a1dbc8f3caf
+destination: /old
+type: 302
+match_type: exact
+YAML
+    );
+
+    \Statamic\Facades\Stache::clear();
+
+    $file = UploadedFile::fake()->createWithContent('redirects.csv', "source,destination,type,match_type\n/foo,/bar,301,exact");
+
+    $this->post(action([ImportRedirectsController::class, 'store']), [
+        'file' => $file,
+        'delimiter' => ',',
+    ])->assertRedirect()->assertSessionHas('success', 'Redirects imported successfully.');
+
+    tap(Redirect::findByUrl($site, '/foo'), function (RedirectContract $redirect) {
+        expect($redirect->destination())->toEqual('/bar');
+        expect($redirect->destination_type())->toEqual('url');
         expect($redirect->type())->toEqual('301');
         expect($redirect->matchType())->toEqual('exact');
     });
