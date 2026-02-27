@@ -48,7 +48,6 @@ use Statamic\Facades\GraphQL;
 use Statamic\Facades\Permission;
 use Statamic\Providers\AddonServiceProvider;
 use Statamic\Stache\Stache;
-use Statamic\Statamic;
 
 class RedirectServiceProvider extends AddonServiceProvider
 {
