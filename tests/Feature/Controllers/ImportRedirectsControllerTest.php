@@ -112,7 +112,7 @@ it('can import over legacy redirects without destination type', function () {
     $site = \Statamic\Facades\Site::default()->handle();
 
     File::ensureDirectoryExists(base_path("content/redirects/{$site}"));
-    File::put(base_path("content/redirects/{$site}/legacy.yaml"), <<<YAML
+    File::put(base_path("content/redirects/{$site}/legacy.yaml"), <<<'YAML'
 id: legacy
 enabled: true
 source: /foo
