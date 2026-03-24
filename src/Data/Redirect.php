@@ -2,6 +2,7 @@
 
 namespace Rias\StatamicRedirect\Data;
 
+use Carbon\CarbonInterface;
 use Rias\StatamicRedirect\Contracts\Redirect as RedirectContract;
 use Rias\StatamicRedirect\Data\Concerns\TracksQueriedRelations;
 use Rias\StatamicRedirect\Enums\MatchTypeEnum;
@@ -56,7 +57,7 @@ class Redirect implements RedirectContract
     /** @var string|null */
     protected $description;
 
-    /** @var null|\Carbon\CarbonInterface */
+    /** @var null|CarbonInterface */
     protected $lastUsedAt;
 
     public function title()

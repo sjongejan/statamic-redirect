@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Cache;
 use Statamic\Events\CollectionTreeSaving;
 use Statamic\Events\EntrySaving;
 use Statamic\Facades\Entry;
+use Statamic\Structures\CollectionTreeDiff;
 
 class CacheOldUri
 {
@@ -25,7 +26,7 @@ class CacheOldUri
             return;
         }
 
-        /** @var \Statamic\Structures\CollectionTreeDiff $diff */
+        /** @var CollectionTreeDiff $diff */
         $diff = $event->tree->diff();
 
         foreach ($diff->affected() as $entry) {

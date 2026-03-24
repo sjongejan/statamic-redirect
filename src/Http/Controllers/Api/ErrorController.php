@@ -2,6 +2,7 @@
 
 namespace Rias\StatamicRedirect\Http\Controllers\Api;
 
+use Illuminate\Pagination\LengthAwarePaginator;
 use Rias\StatamicRedirect\Data\Error;
 use Rias\StatamicRedirect\Http\Resources\ErrorsCollection;
 use Statamic\Http\Requests\FilteredRequest;
@@ -28,7 +29,7 @@ class ErrorController
             $query->orderBy($sortField, $sortDirection);
         }
 
-        /** @var \Illuminate\Pagination\LengthAwarePaginator $errors */
+        /** @var LengthAwarePaginator $errors */
         $errors = $query->paginate(request('perPage'));
 
         return (new ErrorsCollection($errors))

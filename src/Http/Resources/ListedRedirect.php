@@ -4,6 +4,7 @@ namespace Rias\StatamicRedirect\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Date;
+use Rias\StatamicRedirect\Data\Redirect;
 use Statamic\Facades\User;
 
 class ListedRedirect extends JsonResource
@@ -19,7 +20,7 @@ class ListedRedirect extends JsonResource
 
     public function toArray($request)
     {
-        /** @var \Rias\StatamicRedirect\Data\Redirect $redirect */
+        /** @var Redirect $redirect */
         $redirect = $this->resource;
 
         return [

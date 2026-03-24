@@ -90,16 +90,16 @@ it('redirects and sets handled if a redirect is found with eloquent', function (
     DB::setDefaultConnection('redirect-sqlite');
     Schema::dropIfExists('redirects');
     require_once __DIR__.'/../../../database/migrations/create_redirect_redirects_table.php.stub';
-    (new \CreateRedirectRedirectsTable)->up();
+    (new CreateRedirectRedirectsTable)->up();
     require_once __DIR__.'/../../../database/migrations/add_description_to_redirect_redirects_table.php.stub';
-    (new \AddDescriptionToRedirectRedirectsTable)->up();
+    (new AddDescriptionToRedirectRedirectsTable)->up();
     require_once __DIR__.'/../../../database/migrations/increase_redirect_redirects_table_url_length.php.stub';
-    (new \IncreaseRedirectRedirectsTableUrlLength)->up();
+    (new IncreaseRedirectRedirectsTableUrlLength)->up();
     include_once __DIR__.'/../../../database/migrations/version_4_upgrade.php.stub';
-    (new \Version4UpgradeMigration)->up();
+    (new Version4UpgradeMigration)->up();
 
     app()->singleton(RedirectRepository::class, function () {
-        return new \Rias\StatamicRedirect\Eloquent\Redirects\RedirectRepository(app('stache'));
+        return new Rias\StatamicRedirect\Eloquent\Redirects\RedirectRepository(app('stache'));
     });
     Redirect::clearResolvedInstances();
 

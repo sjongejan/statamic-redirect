@@ -4,6 +4,7 @@ namespace Rias\StatamicRedirect\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cache;
 use Rias\StatamicRedirect\Contracts\Redirect as RedirectContract;
 use Rias\StatamicRedirect\Data\Error;
@@ -19,7 +20,7 @@ class HandleNotFound
 
     public function handle(Request $request, Closure $next)
     {
-        /** @var \Illuminate\Http\Response $response */
+        /** @var Response $response */
         $response = $next($request);
 
         if ($response->getStatusCode() !== 404 || ! config('statamic.redirect.enable', true)) {

@@ -5,6 +5,8 @@ use Illuminate\Support\Facades\File;
 use Rias\StatamicRedirect\Contracts\Redirect as RedirectContract;
 use Rias\StatamicRedirect\Facades\Redirect;
 use Rias\StatamicRedirect\Http\Controllers\Redirects\ImportRedirectsController;
+use Statamic\Facades\Site;
+use Statamic\Facades\Stache;
 
 it('can import redirects', function () {
     $this->asAdmin();
@@ -19,7 +21,7 @@ it('can import redirects', function () {
     ])->assertRedirect()->assertSessionHas('success', 'Redirects imported successfully.');
 
     expect(Redirect::query()->count())->toEqual(1);
-    tap(Redirect::findByUrl(\Statamic\Facades\Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
+    tap(Redirect::findByUrl(Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
         expect($redirect->destination())->toEqual('/bar');
         expect($redirect->type())->toEqual('302');
         expect($redirect->matchType())->toEqual('exact');
@@ -59,7 +61,7 @@ it('can import redirects with a txt file', function () {
     ])->assertRedirect()->assertSessionHas('success', 'Redirects imported successfully.');
 
     expect(Redirect::query()->count())->toEqual(1);
-    tap(Redirect::findByUrl(\Statamic\Facades\Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
+    tap(Redirect::findByUrl(Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
         expect($redirect->destination())->toEqual('/bar');
         expect($redirect->type())->toEqual('302');
         expect($redirect->matchType())->toEqual('exact');
@@ -79,7 +81,7 @@ it('will ignore invalid redirects', function () {
     ])->assertRedirect()->assertSessionHas('success', 'Redirects imported successfully. 4 rows skipped due to invalid data. You can find more info in the Laravel log.');
 
     expect(Redirect::query()->count())->toEqual(1);
-    tap(Redirect::findByUrl(\Statamic\Facades\Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
+    tap(Redirect::findByUrl(Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
         expect($redirect->destination())->toEqual('/bar');
         expect($redirect->type())->toEqual('302');
         expect($redirect->matchType())->toEqual('exact');
@@ -99,7 +101,7 @@ it('will update redirects with duplicate source', function () {
     ])->assertRedirect()->assertSessionHas('success', 'Redirects imported successfully.');
 
     expect(Redirect::query()->count())->toEqual(1);
-    tap(Redirect::findByUrl(\Statamic\Facades\Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
+    tap(Redirect::findByUrl(Site::default()->handle(), '/foo'), function (RedirectContract $redirect) {
         expect($redirect->destination())->toEqual('/bar');
         expect($redirect->type())->toEqual('301');
         expect($redirect->matchType())->toEqual('exact');
@@ -109,7 +111,7 @@ it('will update redirects with duplicate source', function () {
 it('can import over legacy redirects without destination type', function () {
     $this->asAdmin();
 
-    $site = \Statamic\Facades\Site::default()->handle();
+    $site = Site::default()->handle();
 
     File::ensureDirectoryExists(base_path("content/redirects/{$site}"));
     File::put(base_path("content/redirects/{$site}/legacy.yaml"), <<<'YAML'
@@ -123,7 +125,7 @@ match_type: exact
 YAML
     );
 
-    \Statamic\Facades\Stache::clear();
+    Stache::clear();
 
     $file = UploadedFile::fake()->createWithContent('redirects.csv', "source,destination,type,match_type\n/foo,/bar,301,exact");
 

@@ -4,6 +4,7 @@ namespace Rias\StatamicRedirect\Http\Controllers\Redirects;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -35,7 +36,7 @@ class ImportRedirectsController
             'delimiter' => ['required'],
         ]);
 
-        /** @var \Illuminate\Http\UploadedFile $file */
+        /** @var UploadedFile $file */
         $file = $request->file('file');
         $delimiter = $request->input('delimiter', ',');
 

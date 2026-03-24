@@ -10,13 +10,14 @@ use Rias\StatamicRedirect\GenerateUrlVariants;
 use Statamic\Data\DataCollection;
 use Statamic\Facades\Stache as StacheFacade;
 use Statamic\Stache\Stache;
+use Statamic\Stache\Stores\Store;
 
 class RedirectRepository implements RepositoryContract
 {
-    /** @var \Statamic\Stache\Stache */
+    /** @var Stache */
     protected $stache;
 
-    /** @var \Statamic\Stache\Stores\Store */
+    /** @var Store */
     protected $store;
 
     public function __construct(Stache $stache)
